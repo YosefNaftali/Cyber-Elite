@@ -6,30 +6,30 @@ PATH_TO_INSTALLED_PACKAGES = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninsta
 
 def get_installed_packages_details():
     result = []
-    # Get handle to all installed packages
-    packages_handle = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, PATH_TO_INSTALLED_PACKAGES, reserved=0,
-                                     access=winreg.KEY_READ)
-
-    index = 0
     try:
-        try:
-            while True:
-                # Generates the full path in Registry of each installed pkg
-                installed_pkg_path = PATH_TO_INSTALLED_PACKAGES + '\\' + winreg.EnumKey(packages_handle, index)
+        # Get handle to all installed packages
+        packages_handle = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, PATH_TO_INSTALLED_PACKAGES, reserved=0,
+                                         access=winreg.KEY_READ)
 
-                # Retrieves the values of each installed pkg
-                pkg_details = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, installed_pkg_path, reserved=0,
-                                             access=winreg.KEY_READ)
-                try:
-                    pkg_name = winreg.QueryValueEx(pkg_details, "DisplayName")[0]
-                    pkg_version = winreg.QueryValueEx(pkg_details, "DisplayVersion")[0]
-                    result.append((pkg_name, pkg_version))
-                except OSError as e:
-                    pass
+        index = 0
+            try:
+                while True:
+                    # Generates the full path in Registry of each installed pkg
+                    installed_pkg_path = PATH_TO_INSTALLED_PACKAGES + '\\' + winreg.EnumKey(packages_handle, index)
 
-                index += 1
-        except OSError as e:
-            return result
+                    # Retrieves the values of each installed pkg
+                    pkg_details = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, installed_pkg_path, reserved=0,
+                                                 access=winreg.KEY_READ)
+                    try:
+                        pkg_name = winreg.QueryValueEx(pkg_details, "DisplayName")[0]
+                        pkg_version = winreg.QueryValueEx(pkg_details, "DisplayVersion")[0]
+                        result.append((pkg_name, pkg_version))
+                    except OSError as e:
+                        pass
+
+                    index += 1
+            except OSError as e:
+                return result
     except Exception as e:
         raise e
 
