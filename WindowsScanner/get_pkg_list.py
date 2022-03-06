@@ -24,11 +24,13 @@ def get_installed_packages_details():
                     pkg_name = winreg.QueryValueEx(pkg_details, "DisplayName")[0]
                     pkg_version = winreg.QueryValueEx(pkg_details, "DisplayVersion")[0]
                     result.append((pkg_name, pkg_version))
+                    winreg.CloseKey(pkg_details)
                 except OSError as e:
                     pass
 
                 index += 1
         except OSError as e:
+            winreg.CloseKey(packages_handle)
             return result
     except Exception as e:
         raise e
