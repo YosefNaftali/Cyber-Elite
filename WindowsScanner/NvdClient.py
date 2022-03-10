@@ -17,17 +17,25 @@ class NvdClient:
     def get_list_of_cpe(self, query_parametr):
         result = []
         try:
-            url = REST_API_URL + "?resultsPerPage="+ resultsPerPage+ "&" + "cpeMatchString=" + query_parametr
+            url = self.create_url_to_nvd_api(query_parametr)
             res = requests.get(url=url).json()
-            cpes_data = res['result']['cpes']
-            for cpe in cpes_data:
-                result.append(cpe['cpe23Uri'])
+            result = self.get_list_cpe_from_nvd_respone(res)
             return result
         except Exception as e:
             print(e)
             return result
 
-    def get_list_of_cve(self):
+    def get_list_of_cve(self, cpe_list):
         return "TODO"
+
+    def get_list_cpe_from_nvd_respone(self, res):
+        result = []
+        cpe_data = res['result']['cpes']
+        for cpe in cpe_data:
+            result.append(cpe['cpe23Uri'])
+        return result
+
+    def create_url_to_nvd_api(self, query_parametr):
+        return REST_API_URL + "?resultsPerPage=" + resultsPerPage + "&" + "cpeMatchString=" + query_parametr
 
 

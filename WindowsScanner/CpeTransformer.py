@@ -1,9 +1,7 @@
-
 class CpeTransformer:
 
     def __init__(self):
         self.cpe2dot3 = "cpe:2.3"
-
 
     def create_cpe_from_data(self, part='a', vendor='*', product='*', version='*', update='*', edition='*',
                              language='*'):
