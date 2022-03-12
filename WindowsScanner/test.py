@@ -1,6 +1,6 @@
 # Script to get all installed packages
 import winreg
-
+#Its work
 PATH_TO_INSTALLED_PACKAGES = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall'
 
 
