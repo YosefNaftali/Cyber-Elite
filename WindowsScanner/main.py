@@ -5,7 +5,7 @@ from Printer import *
 
 
 def main():
-     try:
+    try:
         miner = InstalledPkgMiner()
         transformer = CpeTransformer()
         nvd_client = NvdClient()
@@ -17,10 +17,9 @@ def main():
         installed_packages_cve = nvd_client.get_packages_cve(packages_cpe_schema)
         printer.print(installed_packages_cve, ['Package Name', 'CVE ID'])
 
-     except Exception as e:
-         print(e)
+    except Exception as e:
+        print(e)
 
 
 if __name__ == '__main__':
     main()
-
