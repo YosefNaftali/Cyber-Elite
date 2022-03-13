@@ -12,7 +12,7 @@ def main():
         printer = Printer()
 
         installed_packages = miner.get_installed_packages_details()
-        #installed_packages = [('7-zip', '3.13'), ('7-zip', '4.20'), ('excel', '*')]
+        installed_packages = [('7-zip', '3.13'), ('7-zip', '4.20'), ('excel', '*')]
         packages_cpe_schema = transformer.get_cpe_schema_for_packages(installed_packages)
         print(packages_cpe_schema)
         installed_packages_cve = nvd_client.get_packages_cve(packages_cpe_schema)
