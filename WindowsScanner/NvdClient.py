@@ -1,41 +1,66 @@
 import requests
 
-resultsPerPage = '2000'
-
-
-# api-endpoint
-REST_API_URL = "https://services.nvd.nist.gov/rest/json/cpes/1.0/"
-
-# test_url = "https://services.nvd.nist.gov/rest/json/cpes/1.0/?cpeMatchString=cpe:2.3:a:microsoft:sql_server:2014:sp2"
-
+CPE_REST_API = 'https://services.nvd.nist.gov/rest/json/cpes/1.0/'
+CVE_REST_API = 'https://services.nvd.nist.gov/rest/json/cves/1.0/'
+RESULT_AMOUNT = '2000'
 
 
 class NvdClient:
     def __init__(self):
-        return
+        pass
 
-    def get_list_of_cpe(self, query_parametr):
-        result = []
+    def _get_product_cpe_list(self, product_cpe_schema):
+        result = None
         try:
-            url = self.create_url_to_nvd_api(query_parametr)
+            url = CPE_REST_API + "?resultsPerPage=" + RESULT_AMOUNT + "&" + "cpeMatchString=" + product_cpe_schema
             res = requests.get(url=url).json()
-            result = self.get_list_cpe_from_nvd_respone(res)
+            result = self._response_pharser(res, 'cpe')
             return result
         except Exception as e:
-            print(e)
+            e += 'NvdClient' + '_get_product_cpe_list'
+            raise
+        finally:
             return result
 
-    def get_list_of_cve(self, cpe_list):
-        return "TODO"
+    def _get_product_cve_list(self, product_cpe_list):
+        result = None
+        url = CVE_REST_API + "?resultsPerPage=" + RESULT_AMOUNT + "&" + "cpeMatchString="
+        try:
+            for cpe in product_cpe_list:
+                url += cpe
+                res = requests.get(url=url).json()
+                result = self._response_pharser(res, 'cve')
+                return result
+        except Exception as e:
+            e.args += 'NvdClient' + '_get_product_cve_list'
+            raise
+        finally:
+            return result
 
-    def get_list_cpe_from_nvd_respone(self, res):
+
+    def _response_pharser(self, res, req_type):
         result = []
-        cpe_data = res['result']['cpes']
-        for cpe in cpe_data:
-            result.append(cpe['cpe23Uri'])
+        if req_type == 'cpe':
+            cpe_data = res['result']['cpes']
+            for cpe in cpe_data:
+                result.append(cpe['cpe23Uri'])
+        elif req_type == 'cve':
+            cve_data = res['result']['CVE_Items']
+            for cve in cve_data:
+                result.append(cve['cve']['CVE_data_meta']['ID'])
         return result
 
-    def create_url_to_nvd_api(self, query_parametr):
-        return REST_API_URL + "?resultsPerPage=" + resultsPerPage + "&" + "cpeMatchString=" + query_parametr
+
+    def get_packages_cve(self, installed_packages_cpe_schema):
+        result = {}
+        for cpe_schema in installed_packages_cpe_schema:
+            try:
+                cpe_list = self._get_product_cpe_list(cpe_schema[1])
+                cve_list = self._get_product_cve_list(cpe_list)
+                result[cpe_schema[0]] = cve_list
+            except Exception as e:
+                e.args += 'NvdClient' + 'get_packages_cve'
+                raise
+        return result
 
 

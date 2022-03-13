@@ -1,23 +1,25 @@
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+from InstallPkgMiner import *
 from CpeTransformer import *
 from NvdClient import *
+from Printer import *
 
 
 def main():
     try:
+        miner = InstallPkgMiner()
         transformer = CpeTransformer()
         nvd_client = NvdClient()
-        cpe_schema = transformer.get_cpe_schema_from_package('7-zip')
-        print(cpe_schema)
-        list_cpe = nvd_client.get_list_of_cpe(cpe_schema)
-        print(len(list_cpe))
+        printer = Printer()
+
+        installed_packages = miner.get_installed_packages_details()
+        #installed_packages = [('7-zip', '3.13'), ('7-zip', '4.20'), ('excel', '*')]
+        packages_cpe_schema = transformer.get_cpe_schema_for_packages(installed_packages)
+        print(packages_cpe_schema)
+        installed_packages_cve = nvd_client.get_packages_cve(packages_cpe_schema)
+        printer.print(installed_packages_cve, ['Package Name', 'CVE ID'])
+
     except Exception as e:
         print(e)
-
-
-
 
 
 if __name__ == '__main__':
