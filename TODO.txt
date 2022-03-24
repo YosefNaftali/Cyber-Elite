@@ -1,0 +1,9 @@
+BS"D
+
+TODO:
+
+1. add sevirity to each cve 
+2. better cpe approach 
+3. create vm with installed vulnerabiltys packages  
+4. fix the enahance search 
+5. refactor names and modules
