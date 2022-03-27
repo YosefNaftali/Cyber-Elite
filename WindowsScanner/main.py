@@ -2,10 +2,15 @@ from InstalledPkgMiner import *
 from CpeTransformer import *
 from NvdClient import *
 from Printer import *
+from Search import Search
 
 
 def main():
+
     try:
+        sercher = Search()
+        search_data = sercher.search_machine()
+
         miner = InstalledPkgMiner()
         transformer = CpeTransformer()
         nvd_client = NvdClient()
