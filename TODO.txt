@@ -2,8 +2,24 @@ BS"D
 
 TODO:
 
-1. add sevirity to each cve 
-2. better cpe approach 
-3. create vm with installed vulnerabiltys packages  
-4. fix the enahance search 
-5. refactor names and modules
+1. Add sevirity to each cve 
+2. Better cpe approach 
+	amount of cpe on demand (parameter)
+3. Create vm with installed vulnerabiltys packages  
+4. Fix the enahance search 
+5. Refactor names and modules
+6. get_packages_cve -> 2 method
+7. mouck to winreg
+8. add class that search machine
+9. short main (use 8)
+10. add mock to each component
+11. add documetiton how run the program
+
+
+TODO :
+export requement.txt 
+https://medium.com/@tomagee/pip-freeze-requirements-txt-considered-harmful-f0bce66cf895
+
+doucker comose UP (run program)
+
+
