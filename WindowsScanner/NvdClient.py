@@ -23,13 +23,14 @@ class NvdClient:
             return result
 
     def _get_product_cve_list(self, product_cpe_list):
-        result = None
+        result = []
         url = CVE_REST_API + "?resultsPerPage=" + RESULT_AMOUNT + "&" + "cpeMatchString="
         try:
             for cpe in product_cpe_list:
+                url = CVE_REST_API + "?resultsPerPage=" + RESULT_AMOUNT + "&" + "cpeMatchString="
                 url += cpe
                 res = requests.get(url=url).json()
-                result = self._response_pharser(res, 'cve')
+                result += (self._response_pharser(res, 'cve'))
                 return result
         except Exception as e:
             e.args += 'NvdClient' + '_get_product_cve_list'
@@ -50,6 +51,33 @@ class NvdClient:
                 result.append(cve['cve']['CVE_data_meta']['ID'])
         return result
 
+    def get_cpes_from_nvd(self, installed_cpe_schema):
+        result = []
+        try:
+            cpe_list = self._get_product_cpe_list(installed_cpe_schema)
+            result = cpe_list
+        except Exception as e:
+            raise
+        return result
+
+    def get_matches_cve_to_cpe(self, cpe):
+        result = []
+        try:
+            cve_list = self._get_product_cve_list(cpe)
+            result = cve_list
+        except Exception as e:
+            raise
+        return result
+
+    def get_matches_cve_to_cpe_list(self, cpe_list):
+        result = []
+        for cpe in cpe_list:
+            try:
+                cve_list = self._get_product_cve_list(cpe_list)
+                result.append(cve_list)
+            except Exception as e:
+                raise
+        return result
 
     def get_packages_cve(self, installed_packages_cpe_schema):
         result = {}
