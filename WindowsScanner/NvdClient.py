@@ -2,8 +2,8 @@ import requests
 
 CPE_REST_API = 'https://services.nvd.nist.gov/rest/json/cpes/1.0/'
 CVE_REST_API = 'https://services.nvd.nist.gov/rest/json/cves/1.0/'
-RESULT_AMOUNT = '2000'
-
+CPE_RESULT_AMOUNT = '1'
+CVE_RESULT_AMOUNT_PER_CPE = '3'
 
 class NvdClient:
     def __init__(self):
@@ -12,7 +12,7 @@ class NvdClient:
     def _get_product_cpe_list(self, product_cpe_schema):
         result = None
         try:
-            url = CPE_REST_API + "?resultsPerPage=" + RESULT_AMOUNT + "&" + "cpeMatchString=" + product_cpe_schema
+            url = CPE_REST_API + "?resultsPerPage=" + CPE_RESULT_AMOUNT + "&" + "cpeMatchString=" + product_cpe_schema
             res = requests.get(url=url).json()
             result = self._response_pharser(res, 'cpe')
             return result
@@ -24,14 +24,29 @@ class NvdClient:
 
     def _get_product_cve_list(self, product_cpe_list):
         result = []
-        url = CVE_REST_API + "?resultsPerPage=" + RESULT_AMOUNT + "&" + "cpeMatchString="
+        url = CVE_REST_API + "?resultsPerPage=" + CVE_RESULT_AMOUNT_PER_CPE + "&" + "cpeMatchString="
         try:
             for cpe in product_cpe_list:
-                url = CVE_REST_API + "?resultsPerPage=" + RESULT_AMOUNT + "&" + "cpeMatchString="
+                url = CVE_REST_API + "?resultsPerPage=" + CVE_RESULT_AMOUNT_PER_CPE + "&" + "cpeMatchString="
                 url += cpe
                 res = requests.get(url=url).json()
                 result += (self._response_pharser(res, 'cve'))
                 return result
+        except Exception as e:
+            e.args += 'NvdClient' + '_get_product_cve_list'
+            raise
+        finally:
+            return result
+
+    def _get_product_cve_list_for_cpe(self, cpe):
+        result = []
+        url = CVE_REST_API + "?resultsPerPage=" + CVE_RESULT_AMOUNT_PER_CPE + "&" + "cpeMatchString="
+        try:
+            url = CVE_REST_API + "?resultsPerPage=" + CVE_RESULT_AMOUNT_PER_CPE + "&" + "cpeMatchString="
+            url += cpe
+            res = requests.get(url=url).json()
+            result += (self._response_pharser(res, 'cve'))
+            return result
         except Exception as e:
             e.args += 'NvdClient' + '_get_product_cve_list'
             raise
@@ -73,8 +88,9 @@ class NvdClient:
         result = []
         for cpe in cpe_list:
             try:
-                cve_list = self._get_product_cve_list(cpe_list)
-                result.append(cve_list)
+                cve_list = self._get_product_cve_list_for_cpe(cpe)
+                #result.append(cve_list)
+                result += cve_list
             except Exception as e:
                 raise
         return result
