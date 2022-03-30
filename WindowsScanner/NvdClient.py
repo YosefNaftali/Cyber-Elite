@@ -95,16 +95,16 @@ class NvdClient:
                 raise
         return result
 
-    def get_packages_cve(self, installed_packages_cpe_schema):
-        result = {}
-        for cpe_schema in installed_packages_cpe_schema:
-            try:
-                cpe_list = self._get_product_cpe_list(cpe_schema[1])
-                cve_list = self._get_product_cve_list(cpe_list)
-                result[cpe_schema[0]] = cve_list
-            except Exception as e:
-                e.args += 'NvdClient' + 'get_packages_cve'
-                raise
-        return result
+   #def get_packages_cve(self, installed_packages_cpe_schema):
+   #    result = {}
+   #    for cpe_schema in installed_packages_cpe_schema:
+   #        try:
+   #            cpe_list = self._get_product_cpe_list(cpe_schema[1])
+   #            cve_list = self._get_product_cve_list(cpe_list)
+   #            result[cpe_schema[0]] = cve_list
+   #        except Exception as e:
+   #            e.args += 'NvdClient' + 'get_packages_cve'
+   #            raise
+   #    return result
 
 

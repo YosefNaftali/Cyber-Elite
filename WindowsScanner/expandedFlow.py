@@ -11,8 +11,8 @@ def expandedFlow():
         nvd_client = NvdClient()
         printer = Printer()
 
-        installed_packages = miner.get_installed_packages_details()
-        # installed_packages = [('7-zip', '3.13'), ('7-zip', '4.20'), ('excel', '*')]
+        # installed_packages = miner.get_installed_packages_details()
+        installed_packages = [('7-zip', '3.13'), ('7-zip', '4.20'), ('excel', '*')]
         expanded_iterations = get_maximum_len_of_product_key(installed_packages)
         packages_cpe_schema = transformer.get_cpe_schema_for_packages(installed_packages)
         installed_packages_cve = nvd_client.get_packages_cve(packages_cpe_schema)
