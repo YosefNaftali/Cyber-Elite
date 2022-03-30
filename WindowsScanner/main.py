@@ -8,8 +8,10 @@ from Search import Search
 def main():
 
     try:
-        sercher = Search()
-        search_data = sercher.search_machine()
+        printer = Printer()
+        searcher = Search()
+        search_data = searcher.search_machine()
+        printer.print_tuple_to_chart(search_data, ['Package Name', 'CVE ID'])
 
         miner = InstalledPkgMiner()
         transformer = CpeTransformer()
