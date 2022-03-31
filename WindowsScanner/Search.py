@@ -14,9 +14,10 @@ class Search:
     def search_machine(self):
         result = []
         installed_packages = miner.get_installed_packages_details()
-        installed_packages = [('7-zip (x64)', '3.13'), ('7-zip', '4.20'), ('excel', '*')]
+        installed_packages = [('7-zip', '4.20'), ('7-zip (x64)', '3.13'), ('vpnremote', '4.2.32'),  ('outlook', '2016')]
         packages_cpe_schema = transformer.get_cpe_schema_for_packages(installed_packages)
         for cpe_schema in packages_cpe_schema:
+            print(cpe_schema)
             try:
                 if RUN_EXPANDED_SCAN == 'True':
                     cpes = nvd_client.get_expended_cpes_from_nvd(cpe_schema[1])

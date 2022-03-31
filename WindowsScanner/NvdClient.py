@@ -10,10 +10,10 @@ class NvdClient:
         pass
 
     def _get_product_cpe_list(self, product_cpe_schema):
-        result = None
+        result = []
         try:
             url = CPE_REST_API + "?resultsPerPage=" + CPE_RESULT_AMOUNT + "&" + "cpeMatchString=" + product_cpe_schema
-            res = requests.get(url=url).json()
+            res = requests.get(url=url)
             result = self._response_pharser(res, 'cpe')
             return result
         except Exception as e:
@@ -29,7 +29,7 @@ class NvdClient:
             for cpe in product_cpe_list:
                 url = CVE_REST_API + "?resultsPerPage=" + CVE_RESULT_AMOUNT_PER_CPE + "&" + "cpeMatchString="
                 url += cpe
-                res = requests.get(url=url).json()
+                res = requests.get(url=url)
                 result += (self._response_pharser(res, 'cve'))
                 return result
         except Exception as e:
@@ -44,7 +44,7 @@ class NvdClient:
         try:
             url = CVE_REST_API + "?resultsPerPage=" + CVE_RESULT_AMOUNT_PER_CPE + "&" + "cpeMatchString="
             url += cpe
-            res = requests.get(url=url).json()
+            res = requests.get(url=url)
             result += (self._response_pharser(res, 'cve'))
             return result
         except Exception as e:
@@ -56,15 +56,22 @@ class NvdClient:
 
     def _response_pharser(self, res, req_type):
         result = []
-        if req_type == 'cpe':
-            cpe_data = res['result']['cpes']
-            for cpe in cpe_data:
-                result.append(cpe['cpe23Uri'])
-        elif req_type == 'cve':
-            cve_data = res['result']['CVE_Items']
-            for cve in cve_data:
-                result.append(cve['cve']['CVE_data_meta']['ID'])
-        return result
+        try:
+            res = res.json()
+            if req_type == 'cpe':
+                cpe_data = res['result']['cpes']
+                for cpe in cpe_data:
+                    result.append(cpe['cpe23Uri'])
+            elif req_type == 'cve':
+                cve_data = res['result']['CVE_Items']
+                for cve in cve_data:
+                    result.append(cve['cve']['CVE_data_meta']['ID'])
+        except TypeError as e:
+            raise
+        except Exception as e:
+            raise
+        finally:
+            return result
 
     def get_cpes_from_nvd(self, installed_cpe_schema):
         result = []
@@ -121,9 +128,12 @@ class NvdClient:
         result = None
         try:
             url = CPE_REST_API + "?resultsPerPage=" + CPE_RESULT_AMOUNT + "&" + "cpeMatchString=" + product_cpe_schema
-            res = requests.get(url=url).json()
-            if res == {'message': 'Invalid CPE string provided'} and self.len_of_product_from_cpe(product_cpe_schema) > 1:
-                return self.expended_get_product_cpe_list(self.create_new_short_cpe(product_cpe_schema))
+            res = requests.get(url=url)
+            if res.status_code != 200:
+                if self.len_of_product_from_cpe(product_cpe_schema) > 1:
+                    return self.expended_get_product_cpe_list(self.create_new_short_cpe(product_cpe_schema))
+                else:
+                    return result
             result = self._response_pharser(res, 'cpe')
             return result
         except Exception as e:
