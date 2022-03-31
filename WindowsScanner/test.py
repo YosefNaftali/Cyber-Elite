@@ -36,7 +36,4 @@ def get_installed_packages_details():
         raise e
 
 
-
-
-
 get_installed_packages_details()
