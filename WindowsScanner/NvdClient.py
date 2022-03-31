@@ -86,13 +86,15 @@ class NvdClient:
 
     def get_matches_cve_to_cpe_list(self, cpe_list):
         result = []
-        for cpe in cpe_list:
-            try:
+        if cpe_list is None:
+            return result
+        try:
+            for cpe in cpe_list:
                 cve_list = self._get_product_cve_list_for_cpe(cpe)
-                #result.append(cve_list)
+                # result.append(cve_list)
                 result += cve_list
-            except Exception as e:
-                raise
+        except Exception as e:
+            raise
         return result
 
    #def get_packages_cve(self, installed_packages_cpe_schema):
@@ -106,5 +108,38 @@ class NvdClient:
    #            e.args += 'NvdClient' + 'get_packages_cve'
    #            raise
    #    return result
+    def get_expended_cpes_from_nvd(self, installed_cpe_schema):
+        result = []
+        try:
+            cpe_list = self.expended_get_product_cpe_list(installed_cpe_schema)
+            result = cpe_list
+        except Exception as e:
+            raise
+        return result
 
+    def expended_get_product_cpe_list(self, product_cpe_schema):
+        result = None
+        try:
+            url = CPE_REST_API + "?resultsPerPage=" + CPE_RESULT_AMOUNT + "&" + "cpeMatchString=" + product_cpe_schema
+            res = requests.get(url=url).json()
+            if res == {'message': 'Invalid CPE string provided'} and self.len_of_product_from_cpe(product_cpe_schema) > 1:
+                return self.expended_get_product_cpe_list(self.create_new_short_cpe(product_cpe_schema))
+            result = self._response_pharser(res, 'cpe')
+            return result
+        except Exception as e:
+            e += 'NvdClient' + '_get_product_cpe_list'
+            raise
+
+
+    def len_of_product_from_cpe(self, cpe):
+        product = self.extract_product_fild_from_cpe(cpe)
+        return len(product.split(' '))
+
+    def extract_product_fild_from_cpe(self, cpe):
+        return cpe.split(':')[4]
+
+    def create_new_short_cpe(self, cpe):
+        result = cpe.split(':')
+        result[4] = ' '.join(self.extract_product_fild_from_cpe(cpe).split(" ")[:-1:1])
+        return ':'.join(result)
 
